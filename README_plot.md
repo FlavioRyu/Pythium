@@ -1,4 +1,4 @@
-# Pythium Plots (TEMP)
+# Pythium Plots
 
 A (quick) thorough walkthrough of how plotting classes work in Pythium. Currently, Jupyter test files that are present in the `plot_misc` file contain plot classes and examples of use cases. The file `plot_classes.py` stores all classes.
 
@@ -373,12 +373,48 @@ this function calls `custom_yaxis()`, which does the following:
         
 ## PullPlot
 
+Visualise nuisance parameter pulls with 1 and 2 $\sigma$ region bands. The whole plot is a `matplotlib.errorbar` object, and can be fully customised externally because of the `errorbar_kw` dictionary, which stores all keyword arguments that can be passed into `ax.errorbar()`. The default is
+
+        self.errorbar_kw = {
+            'color'     : 'k',
+            'fmt'       : 'o',
+            'markersize': 3,
+            'elinewidth': 1
+        }
+
+This dictionary is updated using the public functions `plot_options` and `color_options` (to modify colors).
+
 ## ProjectionPlot
+
+Plots a 2D plot together with its $x$ and $y$ projections. The main plot is created using `main_plot` and the two projection subplots are created using `side_plots`. The former function uses `hep.hist2dplot`, while the latter function uses `hep.histlot` to plot the projections. No direct matplotlib functions are used.
 
 ## CMatrixPlot
 
-# Major things that are not supported in the existing classes
+Visualise a correlation matrix plot using the matplotlib `ax.imshow` function. Can also put a color bar on the side to visually indicate the correlation strength of parameters.
 
 
+# Major features that are not supported in existing classes
 
-![image](https://user-images.githubusercontent.com/91688435/169566841-7ecf7125-e668-4d29-994c-718c3f969780.png)
+All classes: cannot customise the ATLAS logo (need a public function to handle this)
+
+### Hist1D
+* Cannot use stack=True and errros=’all’ simultaneously as this will cause an error in mplhep
+* Data samples cannot stack with histos samples (not sure if this is even required?)
+
+### RatioPlot
+* There is no option to display erorrbars on scatter points in the lower subplot, only the errors on the histo bins are shown
+
+### PullPlot
+* Cannot put more than one entry in each bin
+* ATLAS logo does not have luminosity and CoM energy
+* No Hist object input allowed
+
+### ProjectionPlot
+* There is no color bar under the plot for the 2D histogram
+
+### CMatrixPlot
+* Threshold function is wrong: for a given value of threshold, delets entier row/column if not all entries are above the threshold. Instead, it should be that row/column gets preserved if at least one values is above threshold.
+* No Hist object input allowed
+* Figure size does not automatically change on the number of rows/columns
+* Does not support plotting of two separate matrices (one on each side of diagonal)
+* Multiplier of values is fixed to 100. Cannot turn this off from externally
